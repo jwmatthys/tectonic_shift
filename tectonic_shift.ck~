@@ -208,16 +208,15 @@ fun void timer()
 
 class Audiofiles
 {
-	10=> int numFiles;
-	SndBuf ritual[numFiles];
-	Envelope ritualEnv[numFiles];
-	Envelope ritualEnv2[numFiles];
-	Pan2 ritualPan[numFiles];
-	int ritualPlaying[numFiles];
+	SndBuf ritual[8];
+	Envelope ritualEnv[8];
+	Envelope ritualEnv2[8];
+	Pan2 ritualPan[8];
+	int ritualPlaying[8];
 
 	fun void init()
 	{
-		for (int i; i<numFiles; i++)
+		for (int i; i<8; i++)
 		{
 			ritual[i] => ritualEnv[i] => ritualEnv2[i] => ritualPan[i] => dac;
 			0.04 => ritualPan[i].gain;
@@ -231,7 +230,7 @@ class Audiofiles
 	{
 		int w; // which SndBuf
 		do {
-			Math.random2(0,numFiles-1) => w;
+			Math.random2(0,7) => w;
 		} while (ritualPlaying[w]);
 		numPlaying++;
 		true => ritualPlaying[w];

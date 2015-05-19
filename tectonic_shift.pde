@@ -29,8 +29,8 @@ int textCounter = 0;
 void setup()
 {
   // Size of applet
-  size(640, 480);
-  //size(displayWidth, displayHeight);
+  //size(640, 480);
+  size(displayWidth, displayHeight);
   smooth();
   rectMode(CORNERS);
   noCursor();
