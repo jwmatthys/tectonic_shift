@@ -30,7 +30,7 @@ fun void percussion(float tpo)
 {
 	Audiofiles ritual;
 	ritual.init();
-	FluidSynth f => Echo e => Gain g => Spectacle spect => ADSR env1 => ADSR env2 => NRev rev => dac;
+	FluidSynth f => Echo e => Gain g => Spectacle spect => Envelope env1 => Envelope env2 => NRev rev => dac;
 	(tpo*18)::ms => e.max => e.delay;
 	(tpo*36)::ms => spect.delayMin;
 	(tpo*72)::ms => spect.delayMax;
@@ -48,44 +48,45 @@ fun void percussion(float tpo)
 	1 => f.gain;
 	0.05 => rev.mix;
 	int toggleVel;
-	env1.set(5::minute,5::minute,0,0::ms);
-	env2.set(5::minute,5::minute,0,0::ms);
-	//minute => now;
-	1 => env1.keyOn;
-	1 => env2.keyOn;
 	1 => spectMix.keyOn;
 	
 	while (1)
 	{
-		(now + 10::minute) => time later;
-		while (now < later)
+		(tpo * Math.random2f(0,0.25)) => float human;
+		//<<< "numBlobs:",numBlobs, env1.value()>>>;
+		if (numBlobs<3)
 		{
-			(tpo * Math.random2f(0,0.25)) => float human;
-			//<<< "numBlobs:",numBlobs>>>;
-			if (numBlobs>3)
+			if (env1.value()>0)
 			{
-				repeat(6)
-				{
-					spectMix.value() => spect.mix;
-					if (spectMix.state()==2) 1 => spectMix.keyOn;
-					human::ms => now;
-					if (Math.random2(5,30)<numBlobs)
-					{
-						(y[Math.random2(0,numBlobs-1)]*60 + 30)$int => int note;
-						Math.random2(80,100)+(toggleVel*27) => int vel;
-						!toggleVel => toggleVel;
-						f.noteOn(note,vel);
-					}
-				(tpo-human)::ms => now;
-				}
-				if (numPlaying < 3 && Math.random2(12,200)<numBlobs)
-				{
-					spork ~ ritual.play();
-				}
+				2::minute => env1.duration => env2.duration;
+				0 => env1.target => env2.target;
 			}
-			if (Math.random2(0,10)<3) (tpo*12)::ms=>now;
 		}
-		2::minute => now;
+		else
+		{
+			(3::minute / numBlobs) => env1.duration => env2.duration;
+			numBlobs/16.0 => env1.target => env2.target;
+			
+			repeat(6)
+			{
+				spectMix.value() => spect.mix;
+				if (spectMix.state()==2) 1 => spectMix.keyOn;
+				human::ms => now;
+				if (Math.random2(5,20)<numBlobs)
+				{
+					(y[Math.random2(0,numBlobs-1)]*60 + 30)$int => int note;
+					Math.random2(80,100)+(toggleVel*27) => int vel;
+					!toggleVel => toggleVel;
+					f.noteOn(note,vel);
+				}
+			(tpo-human)::ms => now;
+			}
+			if (numPlaying < 3 && Math.random2(10,100)<numBlobs)
+			{
+				spork ~ ritual.play();
+			}
+		}
+		if (Math.random2(0,10)<3) (tpo*12)::ms=>now;
 	}
 }
 
@@ -208,7 +209,7 @@ fun void timer()
 
 class Audiofiles
 {
-	10=> int numFiles;
+	14 => int numFiles;
 	SndBuf ritual[numFiles];
 	Envelope ritualEnv[numFiles];
 	Envelope ritualEnv2[numFiles];
@@ -220,7 +221,7 @@ class Audiofiles
 		for (int i; i<numFiles; i++)
 		{
 			ritual[i] => ritualEnv[i] => ritualEnv2[i] => ritualPan[i] => dac;
-			0.04 => ritualPan[i].gain;
+			0.1 => ritualPan[i].gain;
 			"ritual" + Std.itoa(i+1) + ".wav" => ritual[i].read;
 			0 => ritual[i].rate;
 			10::second => ritualEnv[i].duration => ritualEnv2[i].duration;
@@ -233,6 +234,7 @@ class Audiofiles
 		do {
 			Math.random2(0,numFiles-1) => w;
 		} while (ritualPlaying[w]);
+		<<< "playing ritual",w+1>>>;
 		numPlaying++;
 		true => ritualPlaying[w];
 		ritual[w].length() => dur filelen;
