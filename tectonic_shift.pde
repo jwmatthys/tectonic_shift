@@ -76,6 +76,29 @@ void draw()
     0, 0, img.width, img.height);
     img = getReversePImage(img);
     fastblur(img, blur);
+    int presenceSum = frameDifference(img);
+    theBlobDetection.computeBlobs(img.pixels);
+    drawBlobsAndEdges(drawBars, (drawEdges || textCounter>0), presenceSum);
+    filter(POSTERIZE, poster);
+  }
+  if (textCounter > 1)
+  {
+    fill(255);
+    //else fill(0);
+    noStroke();
+    textSize(30);
+    text("Setting threshold to "+nf(thresh,1,2), 20, 40);
+    textCounter--;
+  }
+  else if (textCounter == 1)
+  {
+    background(0);
+    textCounter = 0;
+  }
+}
+
+int frameDifference (PImage img)
+{
     int presenceSum = 0;
     img.loadPixels();
     for (int i=0; i<img.width*img.height; i++)
@@ -106,24 +129,7 @@ void draw()
       img.pixels[i] = color(diffR, diffG, diffB);
     }
     img.updatePixels();
-    theBlobDetection.computeBlobs(img.pixels);
-    drawBlobsAndEdges(drawBars, (drawEdges || textCounter>0), presenceSum);
-    filter(POSTERIZE, poster);
-  }
-  if (textCounter > 1)
-  {
-    fill(255);
-    //else fill(0);
-    noStroke();
-    textSize(30);
-    text("Setting threshold to "+nf(thresh,1,2), 20, 40);
-    textCounter--;
-  }
-  else if (textCounter == 1)
-  {
-    background(0);
-    textCounter = 0;
-  }
+    return presenceSum;
 }
 
 // ==================================================
@@ -276,4 +282,3 @@ public PImage getReversePImage( PImage image ) {
   }
   return reverse;
 }
-
