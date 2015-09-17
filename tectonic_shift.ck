@@ -209,7 +209,7 @@ fun void timer()
 
 class Audiofiles
 {
-	13 => int numFiles;
+	18 => int numFiles;
 	SndBuf ritual[numFiles];
 	Envelope ritualEnv[numFiles];
 	Envelope ritualEnv2[numFiles];
