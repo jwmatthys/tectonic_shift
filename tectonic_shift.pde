@@ -30,7 +30,7 @@ void setup()
 {
   // Size of applet
   //size(640, 480);
-  size(displayWidth, displayHeight);
+  size(displayWidth, displayHeight, FX2D);
   smooth();
   rectMode(CORNERS);
   noCursor();
