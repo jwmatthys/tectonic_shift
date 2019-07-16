@@ -38,7 +38,7 @@ void setup()
   myRemoteLocation = new NetAddress("localhost", 12001);
 
   // Capture
-  cam = new Capture(this, 640, 480, "/dev/video0");
+  cam = new Capture(this, 640, 480);
   // Comment the following line if you use Processing 1.5
   cam.start();
 
